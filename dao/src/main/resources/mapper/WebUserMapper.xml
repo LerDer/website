@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nanzhao2018.domain.WebUserMapper">
+
+	<sql id="base_colume">
+		id 								AS 			Id,
+		user_name 				AS 			userName,
+		password 					AS 			password,
+		create_time 			AS 			createTime,
+		modify_time				AS			modifyTime,
+		is_deleted				AS			isDeleted
+	</sql>
+
+	<sql id="base_colume_no_id">
+		user_name 				AS 			userName,
+		password 					AS 			password,
+		create_time 			AS 			createTime,
+		modify_time				AS			modifyTime,
+		is_deleted				AS			isDeleted
+	</sql>
+	
+	<sql id="base_where">
+		<where>
+			<if test="keyword != null and keyword !=''">
+				AND user_name LIKE CONCAT ('%',#{keyword},'%')
+			</if>
+			<if test="startDate != null AND startDate != ''">
+				AND create_time &gt; #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND create_time &lt; #{endDate}
+			</if>
+			AND is_deleted = 'n'
+		</where>
+	</sql>
+
+	<insert id="insertUser" useGeneratedKeys="true">
+		INSERT INTO web_user (<include refid="base_colume_no_id"/>)
+		VALUES (#{userName},#{password},now(),null,'n')
+	</insert>
+
+	<delete id="deletedUserById">
+		UPDATE web_user SET is_deleted = 'y'
+		WHERE id = #{id} AND is_deleted = 'n'
+	</delete>
+
+	<update id="updateWebUser">
+		UPDATE web_user
+		<set>
+			modify_time = now(),
+			<if test="userName != null and userName != ''">
+				user_name = #{userName},
+			</if>
+			<if test="password != null and password != ''">
+				password = #{password},
+			</if>
+		</set>
+		WHERE id = #{id} AND is_deleted = 'n'
+	</update>
+
+	<select id="getUserByIdOrName" resultType="com.nanzhao2018.dao.WebUser">
+		SELECT <include refid="base_colume"/>
+		FROM web_user
+		<where>
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="userName != null and userName != ''">
+				AND user_name = #{userName}
+			</if>
+			<if test="password != null and password != ''">
+				AND password = #{password}
+			</if>
+			AND is_deleted = 'n'
+		</where>
+	</select>
+
+	<select id="listCount" resultType="int">
+		SELECT COUNT(1) FROM web_user
+		<include refid="base_where"/>
+	</select>
+
+	<select id="listWebUser" resultType="com.nanzhao2018.dao.WebUser">
+		SELECT <include refid="base_colume"/>
+		FROM web_user
+		<include refid="base_where"/>
+		LIMIT #{start},#{pageSize}
+	</select>
+
+</mapper>
