@@ -14,5 +14,5 @@ public class BaseDomain {
 	protected Long id;
 	protected Date createTime;
 	protected Date modifyTime;
-	protected char isDeleted;
+	protected char isDeleted = 'n';
 }
