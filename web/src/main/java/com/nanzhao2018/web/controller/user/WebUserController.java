@@ -84,7 +84,7 @@ public class WebUserController {
 			List<WebUser> users = webUserService.getUser(webUser);
 			Assert.isTrue(users != null && users.size() == 1 , RES_13);
 			//生成修改密码的密钥
-			String authKey = UUID.randomUUID().toString();
+			String authKey = UUID.randomUUID().toString().replace("-" , "");
 			SessionUtil.session().setAttribute(CHANGE_PASSWORD_AUTHKEY , authKey);
 			//todo:发送邮件
 			
@@ -102,15 +102,15 @@ public class WebUserController {
 	 * @param authKey 密钥
 	 * @return 结果
 	 */
-	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-	public ApiResult preChangePassword(String authKey , String mail) {
+	@RequestMapping(value = "/preChangePassword", method = RequestMethod.POST)
+	public ApiResult preChangePassword(String authKey , String name) {
 		try {
 			Object attribute = SessionUtil.session().getAttribute(CHANGE_PASSWORD_AUTHKEY);
 			Assert.isTrue(attribute != null && !StringUtils.isEmpty(authKey) && authKey.equals(attribute.toString()) ,
 					RES_15);
 			//删除Session中的值，只能调一次
 			SessionUtil.session().removeAttribute(CHANGE_PASSWORD_AUTHKEY);
-			SessionUtil.session().setAttribute(CAN_CHANGE_PASSWORD , mail);
+			SessionUtil.session().setAttribute(CAN_CHANGE_PASSWORD , name);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ApiResult(e.getMessage() , true);
@@ -118,12 +118,19 @@ public class WebUserController {
 		return new ApiResult(RES_16 , false);
 	}
 	
+	/**
+	 * 重置密码接口
+	 *
+	 * @param user 用户
+	 * @return 结果
+	 */
+	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
 	public ApiResult changePassword(WebUser user) {
 		try {
-			String mail = (String) SessionUtil.session().getAttribute(CAN_CHANGE_PASSWORD);
+			String name = (String) SessionUtil.session().getAttribute(CAN_CHANGE_PASSWORD);
 			SessionUtil.session().removeAttribute(CAN_CHANGE_PASSWORD);
 			Assert.isTrue(user.getPassword() != null , RES_17);
-			List<WebUser> userList = webUserService.getUser(new WebUser(null , mail , null));
+			List<WebUser> userList = webUserService.getUser(new WebUser(name , null , null));
 			Assert.isTrue(userList != null && userList.size() == 1 , RES_18);
 			WebUser webUser = userList.get(0);
 			webUser.setPassword(user.getPassword());
