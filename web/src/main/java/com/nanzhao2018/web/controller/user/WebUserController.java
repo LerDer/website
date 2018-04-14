@@ -63,6 +63,11 @@ public class WebUserController {
 		return null;
 	}
 	
+	/**
+	 * 注册
+	 * @param webUser 用户
+	 * @return  结果
+	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ApiResult register(WebUser webUser) {
 		try {
