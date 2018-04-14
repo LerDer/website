@@ -3,6 +3,7 @@ package com.nanzhao2018.web.controller.user;
 import com.nanzhao2018.dao.WebUser;
 import com.nanzhao2018.service.WebUserService;
 import com.nanzhao2018.web.util.ApiResult;
+import com.nanzhao2018.web.util.MailUtil;
 import com.nanzhao2018.web.util.SessionUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +50,9 @@ public class WebUserController {
 	@Resource
 	private WebUserService webUserService;
 	
+	@Resource
+	private MailUtil mailUtil;
+	
 	/**
 	 * 登录
 	 *
@@ -65,14 +71,14 @@ public class WebUserController {
 	}
 	
 	/**
-	 * 密码重置
+	 * 密码重置，邮箱和手机号二选一
 	 *
 	 * @param mail        邮箱
 	 * @param phoneNumber 手机号
 	 * @return 结果
 	 */
 	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
-	public ApiResult applyResetPassword(String mail , String phoneNumber) {
+	public ApiResult applyResetPassword(String mail , String phoneNumber , HttpServletRequest request) {
 		try {
 			WebUser webUser = new WebUser();
 			if (!StringUtils.isEmpty(mail)) {
@@ -86,9 +92,13 @@ public class WebUserController {
 			//生成修改密码的密钥
 			String authKey = UUID.randomUUID().toString().replace("-" , "");
 			SessionUtil.session().setAttribute(CHANGE_PASSWORD_KEY , authKey);
-			//todo:发送邮件
-			
-			
+			//获取重置url和用户名
+			String userName = users.get(0).getUserName();
+			String httpUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() +
+					"/preChangePassword?authKey=" + authKey + "name=" + userName;
+			String msg = userName + "，您好，请点击链接重置密码" + httpUrl;
+			String title = "标题：重置密码邮件！";
+			mailUtil.sentMsg(users.get(0).getMail() , title , msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ApiResult(e.getMessage() , true);
@@ -102,8 +112,9 @@ public class WebUserController {
 	 * @param authKey 密钥
 	 * @return 结果
 	 */
-	@RequestMapping(value = "/preChangePassword", method = RequestMethod.POST)
-	public ApiResult preChangePassword(String authKey , String name) {
+	@RequestMapping(value = "/preChangePassword", method = RequestMethod.GET)
+	public Object preChangePassword(String authKey , String name , HttpServletRequest request , HttpServletResponse
+			response) {
 		try {
 			Object attribute = SessionUtil.session().getAttribute(CHANGE_PASSWORD_KEY);
 			Assert.isTrue(attribute != null && !StringUtils.isEmpty(authKey) && authKey.equals(attribute.toString()) ,
@@ -111,6 +122,7 @@ public class WebUserController {
 			//删除Session中的值，只能调一次
 			SessionUtil.session().removeAttribute(CHANGE_PASSWORD_KEY);
 			SessionUtil.session().setAttribute(CAN_CHANGE_PASSWORD , name);
+			request.getRequestDispatcher("changePassword.html").forward(request , response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ApiResult(e.getMessage() , true);
