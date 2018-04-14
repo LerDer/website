@@ -14,7 +14,7 @@ public class SessionUtil {
 	
 	private static final String CURRENT_IN_SESSION = "loginInfo";
 	
-	private static HttpSession session() {
+	public static HttpSession session() {
 		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
 	}
 	
