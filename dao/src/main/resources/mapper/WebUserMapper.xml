@@ -8,7 +8,11 @@
 		password 					AS 			password,
 		create_time 			AS 			createTime,
 		modify_time				AS			modifyTime,
-		is_deleted				AS			isDeleted
+		is_deleted				AS			isDeleted,
+		mail 							AS 			mail,
+		phone_number 			AS 			phoneNumber,
+		head_img 					AS 			headImg,
+		description 			AS 			description
 	</sql>
 
 	<sql id="base_colume_no_id">
@@ -16,13 +20,22 @@
 		password 					AS 			password,
 		create_time 			AS 			createTime,
 		modify_time				AS			modifyTime,
-		is_deleted				AS			isDeleted
+		is_deleted				AS			isDeleted,
+		mail 							AS 			mail,
+		phone_number 			AS 			phoneNumber,
+		head_img 					AS 			headImg,
+		description 			AS 			description
 	</sql>
-	
+
 	<sql id="base_where">
 		<where>
 			<if test="keyword != null and keyword !=''">
-				AND user_name LIKE CONCAT ('%',#{keyword},'%')
+				AND
+				(
+				user_name LIKE CONCAT ('%',#{keyword},'%')
+				OR mail LIKE CONCAT ('%',#{keyword},'%')
+				OR phone_number LIKE CONCAT ('%',#{keyword},'%')
+				)
 			</if>
 			<if test="startDate != null AND startDate != ''">
 				AND create_time &gt; #{startDate}
@@ -36,12 +49,13 @@
 
 	<insert id="insertUser" useGeneratedKeys="true">
 		INSERT INTO web_user (<include refid="base_colume_no_id"/>)
-		VALUES (#{userName},#{password},now(),null,'n')
+		VALUES (#{userName},#{password},now(),null,'n',#{mail},#{phoneNumber},#{headImg},#{description})
 	</insert>
 
 	<delete id="deletedUserById">
-		UPDATE web_user SET is_deleted = 'y'
-		WHERE id = #{id} AND is_deleted = 'n'
+		UPDATE web_user
+		SET is_deleted = 'y'
+		WHERE id = #{id}
 	</delete>
 
 	<update id="updateWebUser">
@@ -54,12 +68,25 @@
 			<if test="password != null and password != ''">
 				password = #{password},
 			</if>
+			<if test="mail != null and mail != ''">
+				mail = #{mail},
+			</if>
+			<if test="phoneNumber != null and phoneNumber != ''">
+				phone_number = #{phoneNumber},
+			</if>
+			<if test="headImg != null and headImg != ''">
+				head_img = #{headImg},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description},
+			</if>
 		</set>
 		WHERE id = #{id} AND is_deleted = 'n'
 	</update>
 
 	<select id="getUserByIdOrName" resultType="com.nanzhao2018.dao.WebUser">
-		SELECT <include refid="base_colume"/>
+		SELECT
+		<include refid="base_colume"/>
 		FROM web_user
 		<where>
 			<if test="id != null and id != ''">
@@ -71,6 +98,12 @@
 			<if test="password != null and password != ''">
 				AND password = #{password}
 			</if>
+			<if test="mail != null and mail != ''">
+				AND mail = #{mail}
+			</if>
+			<if test="phoneNumber != null and phoneNumber != ''">
+				AND phone_number = #{phoneNumber}
+			</if>
 			AND is_deleted = 'n'
 		</where>
 	</select>
@@ -81,7 +114,8 @@
 	</select>
 
 	<select id="listWebUser" resultType="com.nanzhao2018.dao.WebUser">
-		SELECT <include refid="base_colume"/>
+		SELECT
+		<include refid="base_colume"/>
 		FROM web_user
 		<include refid="base_where"/>
 		LIMIT #{start},#{pageSize}
