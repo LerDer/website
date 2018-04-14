@@ -41,7 +41,7 @@ public class WebUserController {
 	private static final String RES_18 = "查询用户失败！";
 	private static final String RES_19 = "密码重置成功！";
 	
-	private static final String CHANGE_PASSWORD_AUTHKEY = "changePasswordAuthKey";
+	private static final String CHANGE_PASSWORD_KEY = "changePasswordAuthKey";
 	private static final String CAN_CHANGE_PASSWORD = "CanChangePassword";
 	
 	@Resource
@@ -85,7 +85,7 @@ public class WebUserController {
 			Assert.isTrue(users != null && users.size() == 1 , RES_13);
 			//生成修改密码的密钥
 			String authKey = UUID.randomUUID().toString().replace("-" , "");
-			SessionUtil.session().setAttribute(CHANGE_PASSWORD_AUTHKEY , authKey);
+			SessionUtil.session().setAttribute(CHANGE_PASSWORD_KEY , authKey);
 			//todo:发送邮件
 			
 			
@@ -105,11 +105,11 @@ public class WebUserController {
 	@RequestMapping(value = "/preChangePassword", method = RequestMethod.POST)
 	public ApiResult preChangePassword(String authKey , String name) {
 		try {
-			Object attribute = SessionUtil.session().getAttribute(CHANGE_PASSWORD_AUTHKEY);
+			Object attribute = SessionUtil.session().getAttribute(CHANGE_PASSWORD_KEY);
 			Assert.isTrue(attribute != null && !StringUtils.isEmpty(authKey) && authKey.equals(attribute.toString()) ,
 					RES_15);
 			//删除Session中的值，只能调一次
-			SessionUtil.session().removeAttribute(CHANGE_PASSWORD_AUTHKEY);
+			SessionUtil.session().removeAttribute(CHANGE_PASSWORD_KEY);
 			SessionUtil.session().setAttribute(CAN_CHANGE_PASSWORD , name);
 		} catch (Exception e) {
 			e.printStackTrace();
