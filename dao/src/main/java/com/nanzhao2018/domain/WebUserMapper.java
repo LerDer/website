@@ -42,7 +42,7 @@ public interface WebUserMapper {
 	 * @param webUser 把id或名字封装到用户对象中
 	 * @return 用户
 	 */
-	WebUser getUserByIdOrName(WebUser webUser);
+	List<WebUser> getUserByIdOrName(WebUser webUser);
 	
 	/**
 	 * 查询数量
