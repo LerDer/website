@@ -28,6 +28,9 @@ public class WebUserController {
 	private static final String RES_7 = "用户名可用！";
 	private static final String RES_8 = "邮箱可用！";
 	private static final String RES_9 = "手机号可用！";
+	private static final String RES_10 = "请输入正确的邮箱！";
+	private static final String RES_11 = "请输入正确的手机号！";
+	private static final String RES_12 = "用户名只能是中文或英文，长度20！";
 	
 	@Resource
 	private WebUserService webUserService;
@@ -105,6 +108,8 @@ public class WebUserController {
 	@RequestMapping(value = "/checkUserName", method = RequestMethod.POST)
 	public ApiResult checkNameRepeat(String userName) {
 		try {
+			String pattern = "^[\\u4e00-\\u9fa5|\\w]{0,20}$";
+			Assert.isTrue(userName.matches(pattern),RES_12);
 			List<WebUser> user = webUserService.getUser(new WebUser(userName , null , null));
 			Assert.isTrue(user == null || user.size() == 0 , RES_2);
 		} catch (Exception e) {
@@ -123,6 +128,8 @@ public class WebUserController {
 	@RequestMapping(value = "/checkMail", method = RequestMethod.POST)
 	public ApiResult checkMailRepeat(String mail) {
 		try {
+			String pattern = "^\\w+([-+.]\\w+)@\\w+([-.]\\w+).\\w+([-.]\\w+)*$";
+			Assert.isTrue(mail.matches(pattern), RES_10);
 			List<WebUser> user = webUserService.getUser(new WebUser(null , mail , null));
 			Assert.isTrue(user == null || user.size() == 0 , RES_3);
 		} catch (Exception e) {
@@ -141,6 +148,8 @@ public class WebUserController {
 	@RequestMapping(value = "/checkPhone", method = RequestMethod.POST)
 	public ApiResult checkPhoneRepeat(String phoneNumber) {
 		try {
+			String pattern = "^1[3|4|5|7|8][0-9]{9}$";
+			Assert.isTrue(phoneNumber.matches(pattern), RES_11);
 			List<WebUser> user = webUserService.getUser(new WebUser(null , null , phoneNumber));
 			Assert.isTrue(user == null || user.size() == 0 , RES_4);
 		} catch (Exception e) {
