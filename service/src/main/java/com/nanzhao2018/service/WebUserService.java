@@ -4,6 +4,8 @@ import com.nanzhao2018.dao.WebUser;
 import com.nanzhao2018.util.PageResult;
 import com.nanzhao2018.util.QueryObject;
 
+import java.util.List;
+
 /**
  * @author Ler
  */
@@ -36,7 +38,7 @@ public interface WebUserService {
 	 * @param webUser 封装id或名字，用id查询结果只有一个
 	 * @return list
 	 */
-	WebUser getUser(WebUser webUser);
+	List<WebUser> getUser(WebUser webUser);
 	
 	/**
 	 * 高级分页查询
