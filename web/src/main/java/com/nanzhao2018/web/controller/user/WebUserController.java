@@ -77,7 +77,7 @@ public class WebUserController {
 	 * @param phoneNumber 手机号
 	 * @return 结果
 	 */
-	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+	@RequestMapping(value = "/resetPassword", method = {RequestMethod.POST , RequestMethod.GET})
 	public ApiResult applyResetPassword(String mail , String phoneNumber , HttpServletRequest request) {
 		try {
 			WebUser webUser = new WebUser();
@@ -95,7 +95,7 @@ public class WebUserController {
 			//获取重置url和用户名
 			String userName = users.get(0).getUserName();
 			String httpUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() +
-					"/preChangePassword?authKey=" + authKey + "name=" + userName;
+					"/preChangePassword?authKey=" + authKey + "&name=" + userName;
 			String msg = userName + "，您好，请点击链接重置密码" + httpUrl;
 			String title = "标题：重置密码邮件！";
 			mailUtil.sentMsg(users.get(0).getMail() , title , msg);
