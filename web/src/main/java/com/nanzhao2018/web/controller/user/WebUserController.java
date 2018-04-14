@@ -32,6 +32,11 @@ public class WebUserController {
 	@Resource
 	private WebUserService webUserService;
 	
+	/**
+	 * 登录
+	 * @param webUser 用户
+	 * @return  结果
+	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ApiResult login(WebUser webUser) {
 		try {
@@ -43,6 +48,12 @@ public class WebUserController {
 		return new ApiResult(RES_1 , false);
 	}
 	
+	/**
+	 * 密码重置
+	 * @param mail 邮箱
+	 * @param phoneNumber 手机号
+	 * @return  结果
+	 */
 	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
 	public ApiResult changePassword(String mail , String phoneNumber) {
 		WebUser webUser = new WebUser();
