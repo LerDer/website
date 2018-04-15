@@ -1,10 +1,13 @@
 package com.nanzhao2018.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.nanzhao2018.dao.WebUser;
 import com.nanzhao2018.domain.WebUserMapper;
 import com.nanzhao2018.service.WebUserService;
 import com.nanzhao2018.util.PageResult;
 import com.nanzhao2018.util.QueryObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -28,6 +31,7 @@ public class WebUserServiceImpl implements WebUserService {
 	private static final String ERR_7 = "用户名或密码错误，登录失败！";
 	private static final String ERR_8 = "用户名已存在！";
 	
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Resource
 	private WebUserMapper webUserMapper;
@@ -92,6 +96,7 @@ public class WebUserServiceImpl implements WebUserService {
 		WebUser webUser  =new WebUser();
 		webUser.setUserName(user.getUserName());
 		webUser.setPassword(user.getPassword());
+		log.info("WebUser:{}", JSON.toJSONString(webUser));
 		List<WebUser> resUsers = webUserMapper.getUserByIdOrName(webUser);
 		Assert.isTrue(resUsers != null && resUsers.size() == 1 , ERR_7);
 	}
