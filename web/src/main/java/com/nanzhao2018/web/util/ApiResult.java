@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiResult {
-	private String context;
+	private Object context;
 	private Boolean hasErrors;
 	
 	public ApiResult(String context , Boolean hasErrors) {
