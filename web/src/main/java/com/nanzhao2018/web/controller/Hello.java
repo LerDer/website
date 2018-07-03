@@ -1,6 +1,7 @@
 package com.nanzhao2018.web.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +23,7 @@ public class Hello {
 		Map<String, Object> hello = new HashMap<>(16);
 		hello.put("name" , name);
 		response.setStatus(HttpServletResponse.SC_OK);
+		Assert.isTrue(1 == 0 , "测试IllegalArgumentException");
 		return hello;
 	}
 }
