@@ -17,11 +17,6 @@
 			<groupId>com.nanzhao2018</groupId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<artifactId>website</artifactId>
-			<groupId>com.nanzhao2018</groupId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 	<build>
