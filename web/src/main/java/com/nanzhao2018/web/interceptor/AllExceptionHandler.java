@@ -22,9 +22,9 @@ public class AllExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
-	public ApiResult handleException(HttpServletRequest request , IllegalArgumentException e) {
+	public ApiResult handleException(HttpServletRequest request , Exception e) {
 		String url = request.getRequestURI();
-		log.error(url + "\n Exception: " , e);
+		log.error(url + "\n Exception: {}" , e);
 		return new ApiResult(e.getMessage() , true);
 	}
 	
@@ -36,7 +36,7 @@ public class AllExceptionHandler {
 	@ResponseBody
 	public ApiResult handleBusinessException(HttpServletRequest request , IllegalArgumentException e) {
 		String url = request.getRequestURI();
-		log.error(url + "\n IllegalArgumentException: " , e);
+		log.error(url + "\n IllegalArgumentException: {}" , e);
 		return new ApiResult(e.getMessage() , true);
 	}
 }
